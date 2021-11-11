@@ -9,3 +9,6 @@
 6. Front End
 7. Wiring Front End and Backend
 8. Data Analaysis
+
+## ERD-
+![ERD](/images/ERD.png?raw=true "Cloud Computing Platform")
