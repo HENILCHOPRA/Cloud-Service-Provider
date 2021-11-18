@@ -9,11 +9,6 @@ create table authorization(
     userName varchar(20), 
     password varchar(20));
 
-create table subscription(
-    subscriptionID varchar(20) primary key,
-    startDate date,
-    price int);
-
 create table storage(
     storageID varchar(20) primary key,
     size varchar(20),
@@ -24,6 +19,22 @@ create table computing(
     coreCount varchar(20),
     ram varchar(20),
     gpu varchar(20));
+
+create table instance(
+    instanceID varchar(20) primary key,
+    zone varchar(20),
+    instanceType varchar(20),
+    allocated bool,
+    computeID varchar(20),
+    storageID varchar(20),
+    foreign key (storageID) references storage (storageID) on delete cascade,
+    foreign key (computeID) references computing (computeID)on delete cascade);
+
+create table subscription(
+    subscriptionID varchar(20) primary key,
+    startDate date,
+    instanceID varchar(20),
+    foreign key (instanceID) references instance (instanceID) on delete cascade);
 
 create table user(
     userID varchar(20) primary key, 
@@ -43,32 +54,9 @@ create table billing(
     subscriptionID varchar(20),
     foreign key(subscriptionID) references subscription(subscriptionID)on delete cascade);
     
-create table services(
-    serviceID varchar(20) primary key,
-    serviceType varchar(20),
-    computeID varchar(20),
-    storageID varchar(20),
-    subscriptionID varchar(20),
-    foreign key (subscriptionID) references subscription (subscriptionID) on delete cascade,
-    foreign key (storageID) references storage (storageID) on delete cascade,
-    foreign key (computeID) references computing (computeID)on delete cascade);
-    
-create table instance(
-    instanceID varchar(20) primary key,
-    zone varchar(20),
-    instanceType varchar(20),
-    allocated bool,
-    computeID varchar(20),
-    storageID varchar(20),
-    foreign key (storageID) references storage (storageID) on delete cascade,
-    foreign key (computeID) references computing (computeID)on delete cascade);
-    
 create table logs(
     logID varchar(20) primary key,
     description varchar(20),
     timestamp timestamp,
     instanceID varchar(20),
     foreign key (instanceID) references instance (instanceID) on delete cascade);
-    
-            
-
