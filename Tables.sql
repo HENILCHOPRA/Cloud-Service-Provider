@@ -39,7 +39,7 @@ create table subscription(
 create table user(
     userID varchar(20) primary key, 
     name varchar(20),
-    email varchar(20),
+    email varchar(40),
     payID varchar(20),
     authID varchar(20),
     contactNumber varchar(20),
