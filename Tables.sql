@@ -34,8 +34,11 @@ create table instance(
 
 create table subscription(
     subscriptionID varchar(20) primary key,
-    startDate date,
+    userID varchar(20),
     instanceID varchar(20),
+    startDate datetime,
+    endDate datetime,
+    foreign key (userID) references user (userID) on delete cascade,
     foreign key (instanceID) references instance (instanceID) on delete cascade);
 
 create table user(
