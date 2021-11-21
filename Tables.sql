@@ -11,14 +11,16 @@ create table authorization(
 
 create table storage(
     storageID varchar(20) primary key,
-    size varchar(20),
-    type varchar(20));
+    size int,
+    type varchar(20),
+    price int);
 
 create table computing(
     computeID varchar(20) primary key,
-    coreCount varchar(20),
-    ram varchar(20),
-    gpu varchar(20));
+    coreCount int,
+    ram int,
+    gpu varchar(20),
+    price int);
 
 create table instance(
     instanceID varchar(20) primary key,
