@@ -32,15 +32,6 @@ create table instance(
     foreign key (storageID) references storage (storageID) on delete cascade,
     foreign key (computeID) references computing (computeID)on delete cascade);
 
-create table subscription(
-    subscriptionID varchar(20) primary key,
-    userID varchar(20),
-    instanceID varchar(20),
-    startDate datetime,
-    endDate datetime,
-    foreign key (userID) references user (userID) on delete cascade,
-    foreign key (instanceID) references instance (instanceID) on delete cascade);
-
 create table user(
     userID varchar(20) primary key, 
     name varchar(20),
@@ -51,8 +42,17 @@ create table user(
     foreign key(payID) references paymentInformation (payID) on delete cascade,
     foreign key(authID) references authorization (authID) on delete cascade);
 
+create table subscription(
+    subscriptionID varchar(20) primary key,
+    userID varchar(20),
+    instanceID varchar(20),
+    startDate datetime,
+    endDate datetime,
+    foreign key (userID) references user (userID) on delete cascade,
+    foreign key (instanceID) references instance (instanceID) on delete cascade);
+
 create table billing(
-    bilID varchar(20) primary key,
+    billID varchar(20) primary key,
     amount int,
     billDate date,
     dueDate date,
@@ -63,5 +63,6 @@ create table logs(
     logID varchar(20) primary key,
     description varchar(20),
     timestamp timestamp,
+    errorCode int,
     instanceID varchar(20),
     foreign key (instanceID) references instance (instanceID) on delete cascade);
