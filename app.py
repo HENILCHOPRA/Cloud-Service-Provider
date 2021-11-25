@@ -46,12 +46,16 @@ def logout():
 @app.route('/register', methods =['GET', 'POST'])
 def register():
     msg = ''
-    if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form :
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form and 'name' in request.form and 'contact' in request.form and 'paymentMethod' in request.form:
         username = request.form['username']
         password = request.form['password']
         email = request.form['email']
+        name = request.form['name']
+        contact = request.form['contact']
+        paymentMethod = request.form['paymentMethod']
+
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM accounts WHERE username = % s', (username, ))
+        cursor.execute('SELECT * FROM authorization WHERE userName = % s', (username, ))
         account = cursor.fetchone()
         if account:
             msg = 'Account already exists !'
