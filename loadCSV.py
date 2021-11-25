@@ -1,6 +1,7 @@
 import pymysql
 import pandas as pd
 from datetime import datetime
+import time
 
 conn = pymysql.connect(host='127.0.0.1', user='root', password='1234', db='cloudcomputingDB')
 cursor = conn.cursor()
@@ -21,18 +22,20 @@ def loadCSVIntoTable(csvInfo):
 
 csvInfoList = [
 ['./data/payDF.csv', '''INSERT INTO paymentInformation (payID, methodType) VALUES (%s,%s)'''],
-['./data/auth_df.csv', '''INSERT INTO authorization (authID, userName, password) VALUES (%s,%s,%s)'''],
-['./data/userDF.csv', '''INSERT INTO user (userID, name, email, contactNumber, payID, authID) VALUES (%s,%s,%s,%s,%s,%s)'''],
+['./data/auth_df.csv', '''INSERT INTO authorization (authID, password, userName) VALUES (%s,%s,%s)'''],
 ['./data/storage_df.csv', '''INSERT INTO storage (size, type, storageID, price) VALUES (%s,%s,%s,%s)'''],
 ['./data/compute_df.csv', '''INSERT INTO computing (ram, coreCount, gpu, computeID, price) VALUES (%s,%s,%s,%s,%s)'''],
 ['./data/instance_df.csv', '''INSERT INTO instance (instanceID, zone, allocated, computeID, storageID, instanceType) VALUES (%s,%s,%s,%s,%s,%s)'''],
-['./data/sub_df.csv', '''INSERT INTO subscription (subscriptionID, userID, instanceID, startDate, endDate) VALUES (%s,%s,%s,%s,%s)''','''SET sql_mode = '';'''],
-['./data/log_df.csv', '''INSERT INTO logs (logID, instanceID, description, errorCode, timestamp) VALUES (%s,%s,%s,%s,%s)'''],
-['./data/bills_df.csv', '''INSERT INTO billing (billID, billDate, dueDate, subscriptionID, amount) VALUES (%s,%s,%s,%s,%s)''']
+['./data/userDF.csv', '''INSERT INTO user (userID, name, email, contactNumber, payID, authID) VALUES (%s,%s,%s,%s,%s,%s)'''],
+['./data/sub_df.csv', '''INSERT INTO subscription (subscriptionID, userID, instanceID, startDate, endDate) VALUES (%s,%s,%s,%s,%s)''',"""SET sql_mode = '';"""],
+['./data/bills_df.csv', '''INSERT INTO billing (billID, billDate, dueDate, subscriptionID, amount) VALUES (%s,%s,%s,%s,%s)'''],
+['./data/log_df.csv', '''INSERT INTO logs (logID, instanceID, description, errorCode, timestamp) VALUES (%s,%s,%s,%s,%s)''']
 ]
 
 for csvInfo in csvInfoList:
 	loadCSVIntoTable(csvInfo)
+	time.sleep(10)
+
 
 cursor.close()
 conn.close()
