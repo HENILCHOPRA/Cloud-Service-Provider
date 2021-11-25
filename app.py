@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
@@ -7,8 +7,6 @@ import re
 app = Flask(__name__)
 
 
-#login file address- ./NiceAdmin/pages-login.html
-  
 app.secret_key = 'your secret key'
   
 app.config['MYSQL_HOST'] = 'localhost'
@@ -22,24 +20,21 @@ mysql = MySQL(app)
 @app.route('/login', methods =['GET', 'POST'])
 def login():
     msg = ''
-    print(request.form)
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
         username = request.form['username']
         password = request.form['password']
-        print(username, password)
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('SELECT * FROM authorization WHERE userName = % s AND password = % s', (username, password, ))
         account = cursor.fetchone()
-        print(account)
         if account:
             session['loggedin'] = True
             session['id'] = account['authID']
             session['username'] = account['userName']
-            msg = 'Logged in successfully !'
-            return render_template('index.html', msg = msg)
+            return render_template('index.html')
         else:
             msg = 'Incorrect username / password !'
-    return render_template('pages-login.html', msg = msg)
+            flash(msg,'error')
+    return render_template('pages-login.html')
   
 @app.route('/logout')
 def logout():
@@ -47,7 +42,7 @@ def logout():
     session.pop('id', None)
     session.pop('username', None)
     return redirect(url_for('login'))
-  
+
 @app.route('/register', methods =['GET', 'POST'])
 def register():
     msg = ''
@@ -72,7 +67,7 @@ def register():
             msg = 'You have successfully registered !'
     elif request.method == 'POST':
         msg = 'Please fill out the form !'
-    return render_template('register.html', msg = msg)
+    return render_template('pages-register.html', msg = msg)
 
 if __name__ == "__main__":
     app.run(debug=True)
