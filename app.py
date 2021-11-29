@@ -28,7 +28,7 @@ def login():
         account = cursor.fetchone()
         if account:
             session['loggedin'] = True
-            session['id'] = account['authID']
+            #session['id'] = account['authID']
             session['username'] = account['userName']
             return render_template('index.html')
         else:
@@ -59,16 +59,15 @@ def register():
         account = cursor.fetchone()
         if account:
             msg = 'Account already exists !'
-        elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
-            msg = 'Invalid email address !'
-        elif not re.match(r'[A-Za-z0-9]+', username):
-            msg = 'Username must contain only characters and numbers !'
-        elif not username or not password or not email:
-            msg = 'Please fill out the form !'
         else:
-            cursor.execute('INSERT INTO accounts VALUES (NULL, % s, % s, % s)', (username, password, email, ))
+            cursor.execute('CALL generateUserAccount(% s, % s, % s, % s, % s, % s)', (username, password, email, name, contact, paymentMethod))
+            cursor.close()
             mysql.connection.commit()
             msg = 'You have successfully registered !'
+            session['loggedin'] = True
+            #session['id'] = account['authID']
+            session['username'] = username
+            return render_template('index.html')
     elif request.method == 'POST':
         msg = 'Please fill out the form !'
     return render_template('pages-register.html', msg = msg)
