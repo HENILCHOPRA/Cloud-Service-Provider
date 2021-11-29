@@ -30,7 +30,7 @@ def login():
             session['loggedin'] = True
             #session['id'] = account['authID']
             session['username'] = account['userName']
-            return render_template('index.html')
+            return redirect(url_for('profile'))
         else:
             msg = 'Incorrect username / password !'
             flash(msg,'error')
@@ -39,7 +39,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('loggedin', None)
-    session.pop('id', None)
+    #session.pop('id', None)
     session.pop('username', None)
     return redirect(url_for('login'))
 
@@ -67,10 +67,17 @@ def register():
             session['loggedin'] = True
             #session['id'] = account['authID']
             session['username'] = username
-            return render_template('index.html')
+            return redirect(url_for('profile'))
     elif request.method == 'POST':
         msg = 'Please fill out the form !'
     return render_template('pages-register.html', msg = msg)
+
+@app.route("/profile", methods =['GET', 'POST'])
+def profile():
+    if not session.get('username') is None:
+        username = session.get('username')
+        #user = users[username]
+        return render_template("index.html", user=username)
 
 if __name__ == "__main__":
     app.run(debug=True)
