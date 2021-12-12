@@ -85,3 +85,56 @@ BEGIN
     /*COMMIT;*/
 END; //
 DELIMITER ;
+
+USE cloudcomputingDB;
+DROP PROCEDURE IF EXISTS cancelSubscription;
+DELIMITER //
+CREATE PROCEDURE cancelSubscription(subID varchar(20))
+BEGIN
+    /*DECLARE EXIT HANDLER FOR SQLEXCEPTION ROLLBACK;*/
+    /*START TRANSACTION;*/
+        SET @today = NOW();
+        UPDATE subscription SET endDate = @today where subscriptionID=subID;
+        SET @bill = generateBill(subID);
+        CALL generateIDForTable('billing',@billid);
+        SET @billkey = 0;
+        WHILE @billkey!=1 DO
+			IF EXISTS(SELECT * FROM billing WHERE billID=@billid) = 0 THEN
+				SET @billkey = 1;
+			ELSE
+				CALL generateIDForTable('billing',@billid);
+			END IF;
+		END WHILE;
+        SET @billdate = Date(@today);
+        SET @duedate = DATE_ADD(@billdate,INTERVAL 10 DAY);
+        INSERT INTO billing (billID, amount, billDate, dueDate, subscriptionID) values (@billid, @bill, @billdate, @duedate, subID);
+        SELECT instanceID INTO @instId FROM subscription natural join instance where subscriptionID='SUB_100000';
+		UPDATE instance SET allocated = 1 WHERE instanceID = @instId;
+        SELECT 'Subscription cancelled and bill generated Successfully.';
+    /*COMMIT;*/
+END; //
+DELIMITER ;
+
+USE cloudcomputingDB;
+DROP FUNCTION IF EXISTS generateBill;
+DELIMITER //
+
+CREATE FUNCTION generateBill(subID varchar(20)) RETURNS int DETERMINISTIC
+BEGIN
+	DECLARE date1 datetime;
+    DECLARE date2 datetime;
+    DECLARE instType varchar(20);
+    DECLARE rate int;
+    SELECT startDate, endDate into date1, date2 from subscription where subscriptionID=subID;
+    SELECT instanceType into instType from subscription natural join instance where subscriptionID = subID;
+    IF instType = 'COM' THEN
+		select price into rate from subscription natural join instance natural join computing where subscriptionID=@subID;
+	ELSE
+		select price into rate from subscription natural join instance natural join storage where subscriptionID=@subID;
+	END IF;
+    RETURN ((year(date2)-year(date1))*12 + (month(date2)-month(date1)))*rate;
+END 
+
+//
+
+DELIMITER ;
