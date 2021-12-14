@@ -21,3 +21,19 @@ inner join storage on storage.storageID = instance.storageID
 where storage.storageID != '0'
 group by storage.storageID
 order by sum(amount) desc limit 5;
+
+DROP VIEW IF EXISTS storagesubs;
+
+CREATE VIEW storagesubs AS
+select * from (Select w2.userID, w1.storageID, w2.counts from storage w1 join
+(select userID, storageID, count(1) as counts from subscription natural join
+            instance where instanceType = 'STO' group by storageID) w2) as joined
+natural join storage;
+       
+DROP VIEW IF EXISTS computesubs;
+
+CREATE VIEW computesubs AS
+select * from (Select w2.userID, w1.computeID, w2.counts from computing w1 join
+(select userID, computeID, count(1) as counts from subscription natural join
+            instance where instanceType = 'COM' group by computeID) w2) as joined
+natural join computing;
