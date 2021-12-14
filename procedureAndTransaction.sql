@@ -138,3 +138,23 @@ END
 //
 
 DELIMITER ;
+
+
+USE cloudcomputingDB;
+DROP FUNCTION IF EXISTS generateMonthRevenue;
+DELIMITER //
+CREATE FUNCTION generateMonthRevenue() RETURNS int DETERMINISTIC
+BEGIN
+    DECLARE monthRevenue int;
+    SELECT sum(temp.price) into monthRevenue
+	from (select price
+	from subscription natural join instance natural join storage
+	where year(startDate)=year(NOW()) and month(startDate)=month(NOW()) and storageID!='0'
+	union all
+	select price
+	from subscription natural join instance natural join computing
+	where year(startDate)=year(NOW()) and month(startDate)=month(NOW()) and computeID!='0') as temp;
+    RETURN monthRevenue;
+END 
+//
+DELIMITER ;
